@@ -1,0 +1,61 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <title>Lotto: First category winners</title>
+    <link rel="stylesheet" href="../css/bootstrap-solarized-dark.css">
+    <script src='../js/vue.js'></script>
+    <style>
+      th.center { text-align: center; }
+      th.left { text-align: left; }
+      th.right { text-align: right; }
+      tbody.totals { font-weight: bold; }
+    </style>
+  </head>
+  <body class='container'>
+    <div id='app'>
+      <h3>Lotto & Joker 1st category winners</h3>
+      <dl class='dl-horizontal'>
+        <dt>Total draws:</dt><dd>{{ count }}</dd>
+        <dt>Last draw:</dt>
+          <dd>{{ lastDraw.number }} on {{ lastDraw.date | toDMY }}</dd>
+      </dl>
+
+      <div class='table-responsive'>
+        <table class='table table-striped table-hover table-condensed'>
+          <caption>Lotto 1st category winners</caption>
+          <thead>
+            <tr>
+              <th class='center'>Draw#</th>
+              <th class='center'>Date</th>
+              <th class='center'>&times;7</th>
+              <th class='right'>Winnings</th>
+              <th class='right'>Funds</th>
+              <th class='right'>Jackpot</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for='d in ldraws'
+                v-bind:class='{ "text-danger": d.winnings * d.x7 > d.funds + d.jackpot + 1000 }'>
+              <td align='center'>{{ d.draw }}</td>
+              <td align='center'>{{ d.date | toDMY('-') }}</td>
+              <td align='center'>{{ d.x7 }}</td>
+
+              <td align='right'>{{ Math.round(d.winnings) | number }}</td>
+              <td align='right'>{{ Math.round(d.funds) | number }}</td>
+              <td align='right'>{{ Math.round(d.jackpot) | number }}</td>
+            </tr>
+          </tbody>
+          <tbody class='totals'>
+            <tr>
+              <td align='center'>&Sigma; {{ ldraws.length }}</td>
+              <td colspan='5'></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+    </div> <!-- #app -->
+    <script src='../js/cat1.js'></script>
+  </body>
+</html>

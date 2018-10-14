@@ -1,0 +1,21 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <title>Lotto</title>
+    <link rel="stylesheet" href="../css/bootstrap-solarized-light.css">
+    <script src='../js/vue.js'></script>
+    <style>
+    </style>
+  </head>
+  <body class='container'>
+    <div id='app'>
+      <h3>Lotto home</h3>
+      <dl class='dl-horizontal'>
+        <dt>Total draws:</dt><dd>{{ count }}</dd>
+        <dt>Last draw:</dt><dd>{{ lastDraw.number }} on {{ lastDraw.date | toDMY }}</dd>
+      </dl>
+    </div> <!-- #app -->
+    <script src='../js/home.js'></script>
+  </body>
+</html>

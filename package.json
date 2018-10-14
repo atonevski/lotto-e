@@ -1,0 +1,28 @@
+{
+  "name": "lotto-e",
+  "version": "0.0.1",
+  "description": "'Lotto info and stats'",
+  "main": "./js/main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "electron ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/atonevski/lotto-e.git"
+  },
+  "keywords": [
+    "lotto",
+    "stats",
+    "draws"
+  ],
+  "author": "Andreja Tonevski",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/atonevski/lotto-e/issues"
+  },
+  "homepage": "https://github.com/atonevski/lotto-e#readme",
+  "devDependencies": {
+    "electron": "^3.0.4"
+  }
+}

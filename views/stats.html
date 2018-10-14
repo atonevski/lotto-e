@@ -1,0 +1,126 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <title>Lotto: Stats</title>
+    <link rel="stylesheet" href="../css/bootstrap-solarized-dark.css">
+    <script src='../js/vue.js'></script>
+    <style>
+      th.center { text-align: center; }
+      th.left { text-align: left; }
+      th.right { text-align: right; }
+      tbody.totals { font-weight: bold; }
+    </style>
+  </head>
+  <body class='container'>
+    <div id='app'>
+      <h3>Lotto & Joker Stats</h3>
+      <dl class='dl-horizontal'>
+        <dt>Total draws:</dt><dd>{{ count }}</dd>
+        <dt>Last draw:</dt>
+          <dd>{{ lastDraw.number }} on {{ lastDraw.date | toDMY }}</dd>
+      </dl>
+
+      <div class='table-responsive'>
+        <table class='table table-striped table-hover table-condensed'>
+          <caption>Lotto stats</caption>
+          <thead>
+            <tr>
+              <th colspan='2'></th>
+              <th colspan='3' class='center'>Sales</th>
+              <th colspan='5' class='center'>Winners</th>
+            </tr>
+            <tr>
+              <th class='center'>Year</th>
+              <th class='center'>#Draws</th>
+              <th class='right'>Min</th>
+              <th class='right'>Avg</th>
+              <th class='right'>Max</th>
+              <th class='center'>&times;7</th>
+              <th class='center'>&times;6p</th>
+              <th class='center'>&times;6</th>
+              <th class='right'>&times;5</th>
+              <th class='right'>&times;4</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for='(s, i) in lstats'>
+              <td align='center'>{{ s.year }}</td>
+              <td align='center'>{{ s.draws }}</td>
+
+              <td align='right'>{{ s.minLsales | number }}</td>
+              <td align='right'>{{ Math.round(s.avgLsales) | number }}</td>
+              <td align='right'>{{ s.maxLsales | number }}</td>
+
+              <td align='center'>{{ Math.floor(s.x7) | number }}</td>
+              <td align='center'>
+                {{ Math.floor(s.x6p) }} /
+                <span v-if='lstats6p.length > 0'>{{ lstats6p[i].x6pDraws }}</span>
+              </td>
+              <td align='center'>
+                {{ Math.round(s.x6) }}
+                <span v-if='lstats6.length > 0'>
+                  <small>({{ Math.round(lstats6[i].x6Draws*100.0/s.draws) }} %)</small>
+                </span>
+              </td>
+              <td align='right'>{{ Math.round(s.x5) | number }}</td>
+              <td align='right'>{{ Math.round(s.x4) | number }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class='table-responsive'>
+        <table class='table table-striped table-hover table-condensed'>
+          <caption>Joker stats</caption>
+          <thead>
+            <tr>
+              <th colspan='2'></th>
+              <th colspan='3' class='center'>Sales</th>
+              <th colspan='6' class='center'>Winners</th>
+            </tr>
+            <tr>
+              <th class='center'>Year</th>
+              <th class='center'>#Draws</th>
+              <th class='right'>Min</th>
+              <th class='right'>Avg</th>
+              <th class='right'>Max</th>
+              <th class='center'>&times;6</th>
+              <th class='center'>&times;5</th>
+              <th class='center'>&times;4</th>
+              <th class='right'>&times;3</th>
+              <th class='right'>&times;2</th>
+              <th class='right'>&times;1</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for='(s, i) in jstats'>
+              <td align='center'>{{ s.year }}</td>
+              <td align='center'>{{ s.draws }}</td>
+
+              <td align='right'>{{ s.minJsales | number }}</td>
+              <td align='right'>{{ Math.round(s.avgJsales) | number }}</td>
+              <td align='right'>{{ s.maxJsales | number }}</td>
+
+              <td align='center'>{{ Math.floor(s.x6) | number }}</td>
+              <td align='center'>
+                {{ Math.floor(s.x5) }} /
+                <span v-if='jstats5.length > 0'>{{ jstats5[i].x5Draws }}</span>
+              </td>
+              <td align='center'>
+                {{ Math.round(s.x4) }}
+                <span v-if='jstats4.length > 0'>
+                  <small>({{ Math.round(jstats4[i].x4Draws*100.0/s.draws) }} %)</small>
+                </span>
+              </td>
+              <td align='right'>{{ Math.round(s.x3) | number }}</td>
+              <td align='right'>{{ Math.round(s.x2) | number }}</td>
+              <td align='right'>{{ Math.round(s.x1) | number }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div> <!-- #app -->
+    <script src='../js/stats.js'></script>
+  </body>
+</html>
