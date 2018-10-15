@@ -1,4 +1,4 @@
-# main.coffee 
+# main.coffee
 #
 
 electron  = require 'electron'
@@ -23,7 +23,7 @@ createWindow = () ->
 #            icon: './img/lotto-e.png'
 
   win.loadFile './views/home.html'
-  
+
   win.maximize()
   win.webContents.openDevTools()
   console.log process.argv
@@ -46,7 +46,7 @@ createWindow = () ->
       submenu: [
         { label: '1st category winners', click: () -> win.loadFile './views/cat1.html' },
         { type: 'separator' },
-        { label: '2nd category winners' }
+        { label: '2nd category winners', click: () -> win.loadFile './views/cat2.html'  }
       ]
     },
     {
@@ -88,7 +88,7 @@ createWindow = () ->
   # when you should delete the corresponding element.
   win.on 'closed', () ->
     # close any other windows here
-    win = null  
+    win = null
 
   # return val from createWindow()
   null
