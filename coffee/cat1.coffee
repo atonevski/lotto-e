@@ -38,7 +38,7 @@ vue = new Vue
     getTotalDraws: () ->
       q = '''
         SELECT COUNT(A)
-        LABEL COUNT(A) 'count' 
+        LABEL COUNT(A) 'count'
       '''
       https.get utils.qstring(q), (res) =>
         body = ''
@@ -70,18 +70,38 @@ vue = new Vue
           json = utils.parseResponse body
           @ldraws = utils.qresult json
 
+      @jdraws = [ ]
+      jq = '''
+        SELECT
+          A, B,
+          AG, AM, AS, AY
+        WHERE
+          AG > 0
+        ORDER BY B
+        LABEL A 'draw', B 'date',
+              AG 'x6',  AM 'winnings', AS 'funds', AY 'jackpot'
+      '''
+      https.get utils.qstring(jq), (res) =>
+        body = ''
+        res.setEncoding 'utf-8'
+        res.on 'data', (d) -> body += d
+        res.on 'error', (e) -> console.log "query error: #{ e }"
+        res.on 'end', () =>
+          json = utils.parseResponse body
+          @jdraws = utils.qresult json
+
   data:
     count: null
     lastDraw: { }
     ldraws: [ ]
     jdraws: [ ]
- 
+
   created: () ->
     @getTotalDraws()
     @getLastDraw()
     @getWinners()
 
-#  
+#
 #   draw no., date
 #   A         B
 #   lsales, lx7, lx6p, lx6, lx5, lx4, lmx7, lmx6p, lmx6, lmx5, lmx4,
