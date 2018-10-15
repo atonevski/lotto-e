@@ -11,6 +11,21 @@
       th.left { text-align: left; }
       th.right { text-align: right; }
       tbody.totals { font-weight: bold; }
+
+      .red-c { color: crimson; }
+      .green-c { color: green; }
+      .yellow-c { color: goldenrod; }
+      .blue-c { color: cornflowerblue; }
+      .magenta-c { color: hotpink; }
+      .cyan-c { color: cyan; }
+      .light-gray-c { color: lightgray; }
+      .light-red-c { color: palevioletred; }
+      .light-green-c { color: greenyellow; }
+      .light-yellow-c { color: orange; }
+      .light-blue-c { color: dodgerblue; }
+      .light-magenta-c { color: magenta; }
+      .light-cyan-c { color: deepskyblue; }
+      .white-c { color: white; }
     </style>
   </head>
   <body class='container'>
@@ -36,8 +51,8 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for='d in ldraws'
-                v-bind:class='{ "text-danger": d.winnings * d.x6p > d.funds + d.jackpot + 1000 }'>
+            <tr v-for='d, i in ldraws'
+                v-bind:class='colors[d.date.getFullYear() % colors.length]'>
               <td align='center'>{{ d.draw }}</td>
               <td align='center'>{{ d.date | toDMY('.') }}</td>
               <td align='center'>{{ d.x6p }}</td>
@@ -70,7 +85,8 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for='d in jdraws'>
+            <tr v-for='d in jdraws'
+                v-bind:class='colors[d.date.getFullYear() % colors.length]'>
               <td align='center'>{{ d.draw }}</td>
               <td align='center'>{{ d.date | toDMY('.') }}</td>
               <td align='center'>{{ d.x5 }}</td>

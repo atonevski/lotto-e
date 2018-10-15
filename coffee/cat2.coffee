@@ -96,6 +96,10 @@ vue = new Vue
     lastDraw: { }
     ldraws: [ ]
     jdraws: [ ]
+    colors: [ 'red-c', 'green-c', 'yellow-c', 'blue-c', 'magenta-c', 'cyan-c',
+      'light-gray-c', 'light-red-c', 'light-green-c', 'light-yellow-c', 
+      'light-blue-c', 'light-magenta-c', 'light-cyan-c', 'white-c'
+    ]
 
   created: () ->
     @getTotalDraws()
