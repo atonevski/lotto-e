@@ -38,7 +38,10 @@ createWindow = () ->
           click: () -> win.loadFile './views/stats.html'
         },
         { type: 'separator' },
-        { label: 'Drawn numbers' }
+        {
+          label: 'Drawn numbers'
+          click: () -> win.loadFile './views/freq.html'
+        }
       ]
     },
     {

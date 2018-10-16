@@ -62,11 +62,28 @@ vue = new Vue({
         });
       });
     },
-    getWinners: function() {
-      var jq, lq;
-      this.ldraws = [];
-      lq = 'SELECT\n  A, B, E,\n  J, O, T\nWHERE\n  E > 0\nORDER BY B\nLABEL A \'draw\', B \'date\',\n      E \'x6p\',  J \'winnings\', O \'funds\', T \'jackpot\'';
-      https.get(utils.qstring(lq), (res) => {
+    getFreq: function() { // drum: options argument
+      var drum, i, j, lq;
+      this.lfreq = [];
+      for (i = j = 0; j <= 34; i = ++j) {
+        this.lfreq.push([0, 0, 0, 0, 0, 0, 0, 0]);
+      }
+      drum = null;
+      if (arguments.length > 0) {
+        drum = arguments[0];
+      }
+      lq = 'SELECT X, Y, Z, AA, AB, AC, AD, AE\n:filter';
+      lq = (function() {
+        switch (drum) {
+          case utils.VENUS:
+            return lq.replace(/\:filter/, `WHERE B <= date '${utils.toYMD(utils.VENUS_DATE)}'`);
+          case utils.STRESA:
+            return lq.replace(/\:filter/, `WHERE B >= date '${utils.toYMD(utils.STRESA_DATE)}'`);
+          default:
+            return lq.replace(/\:filter/, '');
+        }
+      })();
+      return https.get(utils.qstring(lq), (res) => {
         var body;
         body = '';
         res.setEncoding('utf-8');
@@ -77,27 +94,21 @@ vue = new Vue({
           return console.log(`query error: ${e}`);
         });
         return res.on('end', () => {
-          var json;
+          var json, k, len, r, recs;
           json = utils.parseResponse(body);
-          return this.ldraws = utils.qresult(json);
-        });
-      });
-      this.jdraws = [];
-      jq = 'SELECT\n  A, B,\n  AH, AN, AT, AZ\nWHERE\n  AH > 0\nORDER BY B\nLABEL A \'draw\', B \'date\',\n      AH \'x5\',  AN \'winnings\', AT \'funds\', AZ \'jackpot\'';
-      return https.get(utils.qstring(jq), (res) => {
-        var body;
-        body = '';
-        res.setEncoding('utf-8');
-        res.on('data', function(d) {
-          return body += d;
-        });
-        res.on('error', function(e) {
-          return console.log(`query error: ${e}`);
-        });
-        return res.on('end', () => {
-          var json;
-          json = utils.parseResponse(body);
-          return this.jdraws = utils.qresult(json);
+          recs = utils.qresult(json);
+          for (k = 0, len = recs.length; k < len; k++) {
+            r = recs[k];
+            this.lfreq[r.lwc1][0] += 1;
+            this.lfreq[r.lwc2][1] += 1;
+            this.lfreq[r.lwc3][2] += 1;
+            this.lfreq[r.lwc4][3] += 1;
+            this.lfreq[r.lwc5][4] += 1;
+            this.lfreq[r.lwc6][5] += 1;
+            this.lfreq[r.lwc7][6] += 1;
+            this.lfreq[r.lwcp][7] += 1;
+          }
+          return console.log(this.lfreq);
         });
       });
     }
@@ -105,14 +116,14 @@ vue = new Vue({
   data: {
     count: null,
     lastDraw: {},
-    ldraws: [],
-    jdraws: [],
+    lfreq: [],
+    jfreq: [],
     colors: ['red-c', 'green-c', 'yellow-c', 'blue-c', 'magenta-c', 'cyan-c', 'light-gray-c', 'light-red-c', 'light-green-c', 'light-yellow-c', 'light-blue-c', 'light-magenta-c', 'light-cyan-c', 'white-c']
   },
   created: function() {
     this.getTotalDraws();
     this.getLastDraw();
-    return this.getWinners();
+    return this.getFreq();
   }
 });
 
@@ -131,3 +142,28 @@ vue = new Vue({
 //           AS    AT    AU    AV    AW    AX    AY    AZ    BA    BB    BC    BD
 //           jwc
 //           BE
+
+//     qry = <<-QRY
+//       SELECT X, Y, Z, AA, AB, AC, AD, AE
+//     QRY
+
+//     qry = case opts["drum"]
+//           when "stresa"
+//             "#{ qry } WHERE B >= date '%s'" % Gs::STRESA_DATE.to_s(Gs::YMD_FMT)
+//           when "venus"
+//             "#{ qry } WHERE B <= date '%s'" % Gs::VENUS_DATE.to_s(Gs::YMD_FMT)
+//           else
+//             qry
+//           end
+//     r = Gs.execute qry
+//     freq = [] of Array(Int64)
+
+//     unless r.nil?
+//       Colorize.on_tty_only!
+//       (34+1).times { freq << [0_i64, 0_i64, 0_i64, 0_i64, 0_i64, 0_i64, 0_i64, 0_i64] }
+//       r.each do |r|
+//y
+//       end
+//       tmpl = FreqTemp.new freq, opts["drum"].as(String)
+
+//       puts tmpl

@@ -7,6 +7,11 @@ GS_URL = "https://docs.google.com"
 
 VENUS_DATE  = Date.parse "2011-09-15" # date ≤ 15.09.2011
 STRESA_DATE = Date.parse "2011-09-17" # date ≥ 17.09.2011
+D20DATE     = Date.parse "2016-09-10" # date ≥ 10.09.2016; draw = 73
+D20DRAW     = 73
+D20YEAR     = 2016
+VENUS       = 'VENUS'
+STRESA      = 'STRESA'
 
 qstring = (qry) ->
   "#{ GS_URL }/spreadsheets/d/#{ GS_KEY }/gviz/tq?tqx=out:json&tq=#{ encodeURI qry }"
@@ -46,10 +51,15 @@ toDMY = (d) ->
     .reverse()
     .join(sep)
 
-module.exports.GS_KEY = GS_KEY
-module.exports.GS_URL = GS_URL
-module.exports.VENUS_DATE  = VENUS_DATE
-module.exports.STRESA_DATE = STRESA_DATE
+module.exports.GS_KEY       = GS_KEY
+module.exports.GS_URL       = GS_URL
+module.exports.VENUS_DATE   = VENUS_DATE
+module.exports.STRESA_DATE  = STRESA_DATE
+module.exports.D20DATE      = D20DATE
+module.exports.D20DRAW      = D20DRAW
+module.exports.D20YEAR      = D20YEAR
+module.exports.VENUS        = VENUS
+module.exports.STRESA       = STRESA
 
 module.exports.qstring   = qstring
 module.exports.parseResponse = parseResponse
