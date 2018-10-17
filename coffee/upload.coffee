@@ -33,7 +33,10 @@ vue = new Vue
   methods:
     nextDrawAvail: (d) ->
       today = new Date()
-      @nextDraw? and (@nextDraw.date <= new Date(today.getTime() + 24*60*60*1000))
+      console.log new Date(@nextDraw.date.getTime() + 21*60*60*1000)
+      console.log new Date(today.getTime())
+      @nextDraw? and 
+        new Date(@nextDraw.date.getTime() + 21*60*60*1000) <= today.getTime()
 
     getNextDraw: (d) -> utils.nextDraw d
     getLastDraw: () ->
