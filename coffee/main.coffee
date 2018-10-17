@@ -12,7 +12,7 @@ url       = require 'url'
 # Keep a global reference of the window object, if you don't, the window will
 # be closed automatically when the JavaScript object is garbage collected.
 win = null
-icon = nativeImage.createFromPath path.join __dirname, './img/air-e.png'
+icon = nativeImage.createFromPath path.join __dirname, './img/lotto-e-logo-2.png'
 debugging = on
 
 createWindow = () ->
@@ -20,7 +20,7 @@ createWindow = () ->
             width: 1000, height: 600
             title: 'Lotto'
             background: '#002b36'
-#            icon: './img/lotto-e.png'
+            icon: './img/lotto-e-logo-2.png'
 
   win.loadFile './views/home.html'
 
@@ -65,8 +65,8 @@ createWindow = () ->
               message: 'About message...'
               detail: 'Details here...'
               buttons: ['ok']
-     #       icon: icon
-     #       icon: electron.nativeImage.createFromPath path.join __dirname, '../img/air-e.png'
+     #          icon: icon
+              icon: electron.nativeImage.createFromPath path.join __dirname, '../img/lotto-e-logo-2.png'
      #       icon: path.join __dirname, '../img/air-e.png'
             , (btn, chk) -> console.log btn, chk
         },

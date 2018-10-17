@@ -69,7 +69,7 @@ stripf = (s) ->
 
 parseL = (text) ->
   ret = { }
-  
+
   # extract draw date
   re = /<th>Датум на извлекување:<\/th>\s*<td[^>]*>([^>]*)\s*<\/td>/m
   match = re.exec text
@@ -86,7 +86,7 @@ parseL = (text) ->
   re = /<th>Уплата:<\/th>\s*<td[^>]*>([^>]*)\s*<\/td>(.*)/m
   match = re.exec text
   ret.lsales = parseInt strip match[1]
-  
+
   t = match[2] # rest of.. (post-match)
 
   # extract joker sales
@@ -98,10 +98,10 @@ parseL = (text) ->
   re = /<table\s+class="nl734"\s*>(.*?)<\/table>/gm
   tab = text.match re
   tab = tab[1] # 2nd table is with winners
-  
+
   re = /<tbody>\s*(.*?)\s*<\/tbody>/m
   tab = re.exec tab
-  
+
   re = ///
     <tr>\s*<th>\s*(.*?)\s*<\/th>\s*
     <td>\s*(.*?)\s*<\/td>\s*<td>\s*
@@ -132,10 +132,10 @@ parseL = (text) ->
   re = /<table\s+class="nl734"\s*>(.*?)<\/table>/gm
   tab = text.match re
   tab = tab[0] # 1st table is with winners
-  
+
   re = /<tbody>\s*(.*?)\s*<\/tbody>/m
   tab = re.exec tab
-  
+
   re = ///
     <tr>\s*<th>\s*(.*?)\s*<\/th>\s*
     <th\s*(.*?)\s*<\/th>\s*
@@ -169,10 +169,10 @@ parseL = (text) ->
   tab = text.match re
   raise "can't extract joker winners!" unless tab
   tab = tab[1] # 2nd table is with winners
-  
+
   re = /<tbody>\s*(.*?)\s*<\/tbody>/m
   tab = re.exec tab
-  
+
   re = ///
     <tr>\s*<th>\s*(.*?)\s*<\/th>\s*
     <td>\s*.*?\s*<\/td>\s*<td>\s*(.*?)\s*<\/td>\s*
@@ -207,10 +207,10 @@ parseL = (text) ->
   tab = text.match re
   raise "can't extract joker winners!" unless tab
   tab = tab[0] # st table is with funds/jackpots
-  
+
   re = /<tbody>\s*(.*?)\s*<\/tbody>/m
   tab = re.exec tab
-  
+
   re = ///
     <tr>\s*
       <th>\s*(.*?)\s*<\/th>\s*<th\s*(.*?)\s*<\/th>\s*
@@ -257,6 +257,19 @@ parseL = (text) ->
   # return result
   ret
 
+nextDraw = (d) ->
+  throw "nextDraw(); argument error" unless d
+  throw "Not a valid draw: #{ d }" unless d.draw? or d.date?
+  date = new Date d.date
+  switch date.getDay()
+    when 3 then date.setDate(date.getDate() + 3)
+    when 6 then date.setDate(date.getDate() + 4)
+    else throw "Invalid draw date: #{ d.date }"
+  if date.getFullYear() == d.date.getFullYear()
+    { draw: d.draw + 1, date: date }
+  else
+    { draw: 1, date: date }
+
 # exports
 module.exports.GS_KEY       = GS_KEY
 module.exports.GS_URL       = GS_URL
@@ -276,4 +289,5 @@ module.exports.qresult = qresult
 module.exports.toYMD = toYMD
 module.exports.toDMY = toDMY
 
-module.exports.parseL = parseL
+module.exports.parseL   = parseL
+module.exports.nextDraw = nextDraw
