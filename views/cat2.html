@@ -17,19 +17,19 @@
       .blue-c { color: cornflowerblue; }
       .magenta-c { color: hotpink; }
       .cyan-c { color: cyan; }
-      .light-gray-c { color: lightgray; }
+      .light-gray-c { color: #586e75; }
       .light-red-c { color: palevioletred; }
       .light-green-c { color: greenyellow; }
       .light-yellow-c { color: orange; }
       .light-blue-c { color: dodgerblue; }
       .light-magenta-c { color: magenta; }
       .light-cyan-c { color: deepskyblue; }
-      .white-c { color: white; }
+      .white-c { color: #839496; }
     </style>
   </head>
   <body class='container'>
     <div id='app'>
-      <h3>Lotto & Joker 1st category winners</h3>
+      <h3>Lotto & Joker 2nd category winners</h3>
       <dl class='dl-horizontal'>
         <dt>Total draws:</dt><dd>{{ count }}</dd>
         <dt>Last draw:</dt>
@@ -51,7 +51,7 @@
           </thead>
           <tbody>
             <tr v-for='d, i in ldraws'
-                v-bind:class='colors[d.date.getFullYear() % colors.length]'>
+                v-bind:class='colors[ d.date.getFullYear() % 2 ]'>
               <td align='center'>{{ d.draw }}</td>
               <td align='center'>{{ d.date | toDMY('.') }}</td>
               <td align='center'>{{ d.x6p }}</td>
@@ -85,7 +85,7 @@
           </thead>
           <tbody>
             <tr v-for='d in jdraws'
-                v-bind:class='colors[d.date.getFullYear() % colors.length]'>
+                v-bind:class='colors[ d.date.getFullYear() % 2 ]'>
               <td align='center'>{{ d.draw }}</td>
               <td align='center'>{{ d.date | toDMY('.') }}</td>
               <td align='center'>{{ d.x5 }}</td>

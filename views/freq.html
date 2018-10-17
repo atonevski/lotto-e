@@ -17,7 +17,8 @@
       .blue-c { color: cornflowerblue; }
       .magenta-c { color: hotpink; }
       .cyan-c { color: cyan; }
-      .light-gray-c { color: lightgray; }
+      .light-gray-c { color: #839496; }
+      .dark-gray-c { color: #586e75; }
       .light-red-c { color: palevioletred; }
       .light-green-c { color: greenyellow; }
       .light-yellow-c { color: orange; }
@@ -35,6 +36,19 @@
         <dt>Last draw:</dt>
           <dd>{{ lastDraw.number }} on {{ lastDraw.date | toDMY }}</dd>
       </dl>
+
+      <label class='radio-inline'>
+        <input type='radio' id='drum' name='drum' value='VENUS' v-model='drum'
+               v-on:change='drumChanged'> Venus
+      </label>
+      <label class='radio-inline'>
+        <input type='radio' id='drum' name='drum' value='STRESA' v-model='drum'
+               v-on:change='drumChanged'> Stresa
+      </label>
+      <label class='radio-inline'>
+        <input type='radio' id='drum' name='drum' value='BOTH' v-model='drum'
+               v-on:change='drumChanged'> Both
+      </label>
 
       <div class='table-responsive'>
         <table class='table table-striped table-hover table-condensed'>
@@ -55,7 +69,7 @@
           </thead>
           <tbody>
             <tr v-for='(f, i) in lfreq' v-if='i > 0'>
-              <td align='center'>{{ i }}</td>
+              <td align='center' class='white-c'>{{ i }}</td>
               <td align='center'>{{ f[0] }}</td>
               <td align='center'>{{ f[1] }}</td>
               <td align='center'>{{ f[2] }}</td>
@@ -70,6 +84,35 @@
         </table>
       </div>
 
+      <div class='table-responsive'>
+        <table class='table table-striped table-hover table-condensed'>
+          <caption>Joker drawn numbers freqs</caption>
+          <thead>
+            <tr>
+              <th class='center'>#</th>
+              <th class='center'>1<sup>st</sup></th>
+              <th class='center'>2<sup>nd</sup></th>
+              <th class='center'>3<sup>rd</sup></th>
+              <th class='center'>4<sup>th</sup></th>
+              <th class='center'>5<sup>th</sup></th>
+              <th class='center'>6<sup>th</sup></th>
+              <th class='center'>&Sigma;</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for='(f, i) in jfreq'>
+              <td align='center' class='white-c'>{{ i }}</td>
+              <td align='center'>{{ f[0] }}</td>
+              <td align='center'>{{ f[1] }}</td>
+              <td align='center'>{{ f[2] }}</td>
+              <td align='center'>{{ f[3] }}</td>
+              <td align='center'>{{ f[4] }}</td>
+              <td align='center'>{{ f[5] }}</td>
+              <td align='center'>{{ f.reduce(function(x, s) { return x+s; }, 0)}}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
 
     </div> <!-- #app -->
     <script src='../js/freq.js'></script>

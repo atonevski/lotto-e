@@ -5,9 +5,9 @@
 GS_KEY = "1deUDEVwaNPH1fgy3RlmV98TwgVtHfxQc7gA9YeVs_mc"
 GS_URL = "https://docs.google.com"
 
-VENUS_DATE  = Date.parse "2011-09-15" # date ≤ 15.09.2011
-STRESA_DATE = Date.parse "2011-09-17" # date ≥ 17.09.2011
-D20DATE     = Date.parse "2016-09-10" # date ≥ 10.09.2016; draw = 73
+VENUS_DATE  = new Date Date.parse "2011-09-15" # date ≤ 15.09.2011
+STRESA_DATE = new Date Date.parse "2011-09-17" # date ≥ 17.09.2011
+D20DATE     = new Date Date.parse "2016-09-10" # date ≥ 10.09.2016; draw = 73
 D20DRAW     = 73
 D20YEAR     = 2016
 VENUS       = 'VENUS'

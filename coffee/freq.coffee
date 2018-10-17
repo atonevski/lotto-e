@@ -50,17 +50,15 @@ vue = new Vue
           @count = (utils.qresult json)[0].count
 
     getFreq: () -> # drum: options argument
-      @lfreq = [ ]
+      lfreq = [ ]
       for i in [0..34]
-        @lfreq.push [0, 0, 0, 0, 0, 0, 0, 0]
+        lfreq.push [0, 0, 0, 0, 0, 0, 0, 0]
 
-      drum = null
-      drum = arguments[0] if arguments.length > 0
       lq = '''
         SELECT X, Y, Z, AA, AB, AC, AD, AE
         :filter
       '''
-      lq = switch drum
+      lq = switch @drum
             when utils.VENUS
               lq.replace /\:filter/,
                   "WHERE B <= date '#{utils.toYMD utils.VENUS_DATE}'"
@@ -79,26 +77,66 @@ vue = new Vue
           json = utils.parseResponse body
           recs = utils.qresult json
           for r in recs
-            @lfreq[r.lwc1][0] += 1
-            @lfreq[r.lwc2][1] += 1
-            @lfreq[r.lwc3][2] += 1
-            @lfreq[r.lwc4][3] += 1
-            @lfreq[r.lwc5][4] += 1
-            @lfreq[r.lwc6][5] += 1
-            @lfreq[r.lwc7][6] += 1
-            @lfreq[r.lwcp][7] += 1
-          console.log @lfreq
+            lfreq[r.lwc1][0] += 1
+            lfreq[r.lwc2][1] += 1
+            lfreq[r.lwc3][2] += 1
+            lfreq[r.lwc4][3] += 1
+            lfreq[r.lwc5][4] += 1
+            lfreq[r.lwc6][5] += 1
+            lfreq[r.lwc7][6] += 1
+            lfreq[r.lwcp][7] += 1
+          @lfreq = lfreq
+        null
+
+
+      jq = '''
+        SELECT BE
+        :filter
+      '''
+      jq = switch @drum
+            when utils.VENUS
+              jq.replace /\:filter/,
+                  "WHERE B <= date '#{utils.toYMD utils.VENUS_DATE}'"
+            when utils.STRESA
+              jq.replace /\:filter/,
+                  "WHERE B >= date '#{utils.toYMD utils.STRESA_DATE}'"
+            else
+              jq.replace /\:filter/, ''
+      https.get utils.qstring(jq), (res) =>
+        jfreq = []
+        for i in [0..9]
+          jfreq.push [0, 0, 0, 0, 0, 0]
+        body = ''
+        res.setEncoding 'utf-8'
+        res.on 'data', (d) -> body += d
+        res.on 'error', (e) -> console.log "query error: #{ e }"
+        res.on 'end', () =>
+          json = utils.parseResponse body
+          recs = utils.qresult json
+          arr = recs.map (r) ->
+                r.jwc.split ''
+                 .map (e) -> parseInt e
+          for a in arr
+            for i, n of a
+              jfreq[n][i]++
+          @jfreq = jfreq
+        null
+      null
+
+    drumChanged: () ->
+      console.log "Drum is:", @drum
+      @getFreq()
+
   data:
     count: null
     lastDraw: { }
     lfreq: [ ]
     jfreq: [ ]
-    colors: [ 'red-c', 'green-c', 'yellow-c', 'blue-c', 'magenta-c', 'cyan-c',
-      'light-gray-c', 'light-red-c', 'light-green-c', 'light-yellow-c',
-      'light-blue-c', 'light-magenta-c', 'light-cyan-c', 'white-c'
-    ]
+    drum: 'BOTH'
 
   created: () ->
+    console.log utils.VENUS_DATE, utils.toYMD utils.VENUS_DATE
+    console.log utils.STRESA_DATE, utils.toYMD utils.STRESA_DATE
     @getTotalDraws()
     @getLastDraw()
     @getFreq()
@@ -120,27 +158,3 @@ vue = new Vue
 #           BE
 
 
-#     qry = <<-QRY
-#       SELECT X, Y, Z, AA, AB, AC, AD, AE
-#     QRY
-#
-#     qry = case opts["drum"]
-#           when "stresa"
-#             "#{ qry } WHERE B >= date '%s'" % Gs::STRESA_DATE.to_s(Gs::YMD_FMT)
-#           when "venus"
-#             "#{ qry } WHERE B <= date '%s'" % Gs::VENUS_DATE.to_s(Gs::YMD_FMT)
-#           else
-#             qry
-#           end
-#     r = Gs.execute qry
-#     freq = [] of Array(Int64)
-#
-#     unless r.nil?
-#       Colorize.on_tty_only!
-#       (34+1).times { freq << [0_i64, 0_i64, 0_i64, 0_i64, 0_i64, 0_i64, 0_i64, 0_i64] }
-#       r.each do |r|
-#y
-#       end
-#       tmpl = FreqTemp.new freq, opts["drum"].as(String)
-#
-#       puts tmpl
