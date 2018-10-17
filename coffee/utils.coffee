@@ -13,6 +13,8 @@ D20YEAR     = 2016
 VENUS       = 'VENUS'
 STRESA      = 'STRESA'
 
+L_URL = "http://test.lotarija.mk/Results/WebService.asmx/GetDetailedReport"
+
 qstring = (qry) ->
   "#{ GS_URL }/spreadsheets/d/#{ GS_KEY }/gviz/tq?tqx=out:json&tq=#{ encodeURI qry }"
 
@@ -51,6 +53,211 @@ toDMY = (d) ->
     .reverse()
     .join(sep)
 
+# parse draw report
+
+strip = (s) ->
+  re = /([\d.]*)/
+  match = re.exec s
+  match[1].replace /\./g, ''
+
+# strip float: strip '.' and leave \d only, convert ',' to '.'
+stripf = (s) ->
+  re = /([\d.,]*)/
+  match = re.exec s
+  match = match[1].replace /\./g, ''
+  match.replace /,/g, '.'
+
+parseL = (text) ->
+  ret = { }
+  
+  # extract draw date
+  re = /<th>Датум на извлекување:<\/th>\s*<td[^>]*>([^>]*)\s*<\/td>/m
+  match = re.exec text
+  re = /^(\d\d).(\d\d).(\d\d\d\d)$/
+  match = re.exec match[1]
+  ret.date = new Date match[1..3].reverse().join '-'
+
+  # extract draw number
+  re = /br>\s*(\d+)\.[^<]*<\/h2>/m
+  match = re.exec text
+  ret.draw = parseInt match[1]
+
+  # extract lotto sales
+  re = /<th>Уплата:<\/th>\s*<td[^>]*>([^>]*)\s*<\/td>(.*)/m
+  match = re.exec text
+  ret.lsales = parseInt strip match[1]
+  
+  t = match[2] # rest of.. (post-match)
+
+  # extract joker sales
+  re = /<th>Уплата:<\/th>\s*<td[^>]*>([^>]*)\s*<\/td>/m
+  match = re.exec t
+  ret.jsales = parseInt strip match[1]
+
+  # extract lotto winners
+  re = /<table\s+class="nl734"\s*>(.*?)<\/table>/gm
+  tab = text.match re
+  tab = tab[1] # 2nd table is with winners
+  
+  re = /<tbody>\s*(.*?)\s*<\/tbody>/m
+  tab = re.exec tab
+  
+  re = ///
+    <tr>\s*<th>\s*(.*?)\s*<\/th>\s*
+    <td>\s*(.*?)\s*<\/td>\s*<td>\s*
+    (.*?)\s*<\/td>\s*<\/tr>(.*)
+  ///m
+  match = re.exec tab[1]
+  while match
+    switch match[1]
+      when "7 погодоци"
+        ret.lx7   = parseInt match[2]
+        ret.lmx7  = parseFloat stripf(match[3])
+      when "6+1 погодоци"
+        ret.lx6p  = parseInt match[2]
+        ret.lmx6p = parseFloat stripf(match[3])
+      when "6 погодоци"
+        ret.lx6   = parseInt match[2]
+        ret.lmx6  = parseFloat stripf(match[3])
+      when "5 погодоци"
+        ret.lx5   = parseInt match[2]
+        ret.lmx5  = parseFloat stripf(match[3])
+      when "4 погодоци"
+        ret.lx4   = parseInt match[2]
+        ret.lmx4  = parseFloat stripf(match[3])
+    tab = match[4]
+    match = re.exec tab
+
+  # extract lotto funds, and jackpots
+  re = /<table\s+class="nl734"\s*>(.*?)<\/table>/gm
+  tab = text.match re
+  tab = tab[0] # 1st table is with winners
+  
+  re = /<tbody>\s*(.*?)\s*<\/tbody>/m
+  tab = re.exec tab
+  
+  re = ///
+    <tr>\s*<th>\s*(.*?)\s*<\/th>\s*
+    <th\s*(.*?)\s*<\/th>\s*
+    <td\s*>\s*(.*?)\s*<\/td>\s*<td\s*>\s*
+    (.*?)\s*<\/td>\s*
+    <td\s*>\s*(.*?)\s*<\/td>\s*<\/tr>(.*)
+  ///m
+  match = re.exec tab[1]
+  while match
+    switch match[1]
+      when "I"
+        ret.lfx7  = parseFloat stripf(match[3])
+        ret.ljx7  = parseFloat stripf(match[4])
+      when "II"
+        ret.lfx6p = parseFloat stripf(match[3])
+        ret.ljx6p = parseFloat stripf(match[4])
+      when "III"
+        ret.lfx6  = parseFloat stripf(match[3])
+        ret.ljx6  = parseFloat stripf(match[4])
+      when "IV"
+        ret.lfx5  = parseFloat stripf(match[3])
+        ret.ljx5  = parseFloat stripf(match[4])
+      when "V"
+        ret.lfx4  = parseFloat stripf(match[3])
+        ret.ljx4  = parseFloat stripf(match[4])
+    tab = match[6]
+    match = re.exec tab
+
+  # extract joker winners
+  re = /<table\s+class="j734"\s*>(.*?)<\/table>/gm
+  tab = text.match re
+  raise "can't extract joker winners!" unless tab
+  tab = tab[1] # 2nd table is with winners
+  
+  re = /<tbody>\s*(.*?)\s*<\/tbody>/m
+  tab = re.exec tab
+  
+  re = ///
+    <tr>\s*<th>\s*(.*?)\s*<\/th>\s*
+    <td>\s*.*?\s*<\/td>\s*<td>\s*(.*?)\s*<\/td>\s*
+    <td>\s*(.*?)\s*<\/td>\s*<\/tr>(.*)
+  ///m
+  match = re.exec tab[1]
+  while match
+    switch match[1]
+      when "6 погодоци"
+        ret.jx6  = parseInt match[2]
+        ret.jmx6 = parseFloat stripf(match[3])
+      when "5 погодоци"
+        ret.jx5  = parseInt match[2]
+        ret.jmx5 = parseFloat stripf(match[3])
+      when "4 погодоци"
+        ret.jx4  = parseInt match[2]
+        ret.jmx4 = parseFloat stripf(match[3])
+      when "3 погодоци"
+        ret.jx3  = parseInt match[2]
+        ret.jmx3 = parseFloat stripf(match[3])
+      when "2 погодоци"
+        ret.jx2  = parseInt match[2]
+        ret.jmx2 = parseFloat stripf(match[3])
+      when "1 погодок"
+        ret.jx1  = parseInt match[2]
+        ret.jmx1 = parseFloat stripf(match[3])
+    tab = match[4]
+    match = re.exec tab
+
+  # extract joker winners
+  re = /<table\s+class="j734"\s*>(.*?)<\/table>/gm
+  tab = text.match re
+  raise "can't extract joker winners!" unless tab
+  tab = tab[0] # st table is with funds/jackpots
+  
+  re = /<tbody>\s*(.*?)\s*<\/tbody>/m
+  tab = re.exec tab
+  
+  re = ///
+    <tr>\s*
+      <th>\s*(.*?)\s*<\/th>\s*<th\s*(.*?)\s*<\/th>\s*
+    <td>\s*(.*?)\s*<\/td>\s*<td>\s*(.*?)\s*<\/td>\s*
+    <td>\s*(.*?)\s*<\/td>\s*<\/tr>(.*)
+  ///m
+  match = re.exec tab[1]
+  while match
+    switch match[1]
+      when "I"
+        ret.jfx6 = parseFloat stripf(match[3])
+        ret.jjx6 = parseFloat stripf(match[4])
+      when "II"
+        ret.jfx5 = parseFloat stripf(match[3])
+        ret.jjx5 = parseFloat stripf(match[4])
+      when "III"
+        ret.jfx4 = parseFloat stripf(match[3])
+        ret.jjx4 = parseFloat stripf(match[4])
+      when "IV"
+        ret.jfx3 = parseFloat stripf(match[3])
+        ret.jjx3 = parseFloat stripf(match[4])
+      when "V"
+        ret.jfx2 = parseFloat stripf(match[3])
+        ret.jjx2 = parseFloat stripf(match[4])
+      when "VI"
+        ret.jfx1 = parseFloat stripf(match[3])
+        ret.jjx1 = parseFloat stripf(match[4])
+    tab = match[6]
+    match = re.exec tab
+
+  # extract lotto winning columns
+  re = /<p>Редослед на извлекување:\s*([\d,]+)\.?\s*<\/p>/m
+  match = re.exec text
+  throw "can't extract lotto winning column!" unless match
+  lwcol = match[1].split /\s*,\s*/
+                  .map (e) -> parseInt e
+  [ ret.lwc1, ret.lwc2, ret.lwc3, ret.lwc4, ret.lwc5, ret.lwc6, ret.lwc7, ret.lwcp ] = lwcol
+
+  # joker winnig column
+  re = /<div\s+id="joker">\s*(\d+)\s*<\/div>/m
+  match = re.exec text
+  ret.jwc = match[1]
+
+  # return result
+  ret
+
+# exports
 module.exports.GS_KEY       = GS_KEY
 module.exports.GS_URL       = GS_URL
 module.exports.VENUS_DATE   = VENUS_DATE
@@ -60,6 +267,7 @@ module.exports.D20DRAW      = D20DRAW
 module.exports.D20YEAR      = D20YEAR
 module.exports.VENUS        = VENUS
 module.exports.STRESA       = STRESA
+module.exports.L_URL        = L_URL
 
 module.exports.qstring   = qstring
 module.exports.parseResponse = parseResponse
@@ -67,3 +275,5 @@ module.exports.qresult = qresult
 
 module.exports.toYMD = toYMD
 module.exports.toDMY = toDMY
+
+module.exports.parseL = parseL

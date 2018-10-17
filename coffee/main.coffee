@@ -52,6 +52,7 @@ createWindow = () ->
         { label: '2nd category winners', click: () -> win.loadFile './views/cat2.html'  }
       ]
     },
+    { label: 'Upload', click: () ->  win.loadFile './views/upload.html' },
     {
       label: 'Help'
       submenu: [

@@ -173,8 +173,6 @@ vue = new Vue({
     drum: 'BOTH'
   },
   created: function() {
-    console.log(utils.VENUS_DATE, utils.toYMD(utils.VENUS_DATE));
-    console.log(utils.STRESA_DATE, utils.toYMD(utils.STRESA_DATE));
     this.getTotalDraws();
     this.getLastDraw();
     return this.getFreq();

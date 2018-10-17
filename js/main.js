@@ -63,6 +63,11 @@ createWindow = function() {
         }
       ]
     }, {
+      label: 'Upload',
+      click: function() {
+        return win.loadFile('./views/upload.html');
+      }
+    }, {
       label: 'Help',
       submenu: [
         {
