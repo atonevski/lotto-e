@@ -37,8 +37,9 @@
           <dd>{{ lastDraw.draw }} on {{ lastDraw.date | toDMY }}</dd>
         <dt v-if='nextDraw'>Next draw:</dt>
           <dd v-if='nextDraw'>{{ nextDraw.draw }} on {{ nextDraw.date | toDMY }}
-          <button type='button' class='btn btn-default btn-xs' :disabled='!nextDrawAvail()'>
-            <span class='glyphicon glyphicon-arrow-up'></span> Upload</button>
+          <button type='button' class='btn btn-default btn-xs'
+                  :disabled='!nextDrawAvail()' v-on:click='fetchDrawAndUpload()'>
+            <span class='glyphicon glyphicon-cloud-upload'></span> Upload</button>
           </dd>
       </dl>
 

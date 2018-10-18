@@ -15,8 +15,6 @@ vue = new Vue({
     count: null,
     lastDraw: {},
     nextDraw: null,
-    year: 2018,
-    draw: 81,
     html: null,
     info: null
   },
@@ -88,11 +86,14 @@ vue = new Vue({
         };
       })(this));
     },
-    fetchDraw: function() {
+    fetchDrawAndUpload: function() {
       var params;
+      if (!this.nextDraw) {
+        throw "Next draw not available";
+      }
       params = {
-        godStr: this.year.toString(),
-        koloStr: this.draw.toString()
+        godStr: this.nextDraw.date.getFullYear().toString(),
+        koloStr: this.nextDraw.draw.toString()
       };
       return request.post({
         url: utils.L_URL,
@@ -103,7 +104,8 @@ vue = new Vue({
           _this.html = body.d;
           _this.info = utils.parseL(_this.html);
           console.log(_this.info);
-          return console.log("serializeDrawInfo:", _this.serializeDrawInfo(_this.info));
+          console.log("serializeDrawInfo:", _this.serializeDrawInfo(_this.info));
+          return _this.upload();
         };
       })(this));
     },
@@ -122,11 +124,27 @@ vue = new Vue({
       s += ("jfx6=" + i.jfx6 + "&jfx5=" + i.jfx5 + "&jfx4=" + i.jfx4 + "&") + ("jfx3=" + i.jfx3 + "&jfx2=" + i.jfx2 + "&jfx1=" + i.jfx1 + "&");
       s += ("jjx6=" + i.jjx6 + "&jjx5=" + i.jjx5 + "&jjx4=" + i.jjx4 + "&") + ("jjx3=" + i.jjx3 + "&jjx2=" + i.jjx2 + "&jjx1=" + i.jjx1 + "&");
       return s += "jwc=" + i.jwc;
+    },
+    upload: function() {
+      if (!this.info) {
+        throw "Invalid draw info";
+      }
+      return request.post({
+        url: utils.APPEND_ULR,
+        body: this.serializeDrawInfo(this.info)
+      }, (function(_this) {
+        return function(err, res, body) {
+          console.log("Upload status code: " + res.statusCode);
+          if (res.statusCode === 200) {
+            _this.getTotalDraws();
+            return _this.getLastDraw();
+          }
+        };
+      })(this));
     }
   },
   created: function() {
     this.getTotalDraws();
-    this.getLastDraw();
-    return this.fetchDraw();
+    return this.getLastDraw();
   }
 });

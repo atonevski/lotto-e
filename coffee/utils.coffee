@@ -4,6 +4,8 @@
 
 GS_KEY = "1deUDEVwaNPH1fgy3RlmV98TwgVtHfxQc7gA9YeVs_mc"
 GS_URL = "https://docs.google.com"
+APPEND_ULR = "https://script.google.com/macros/s/" +
+             "AKfycbz_vGNNQpXV4VFBt8dAktnbSWKASduNUS9OJkq8PBpuoUAabh1W/exec"
 
 VENUS_DATE  = new Date Date.parse "2011-09-15" # date ≤ 15.09.2011
 STRESA_DATE = new Date Date.parse "2011-09-17" # date ≥ 17.09.2011
@@ -273,6 +275,7 @@ nextDraw = (d) ->
 # exports
 module.exports.GS_KEY       = GS_KEY
 module.exports.GS_URL       = GS_URL
+module.exports.APPEND_ULR   = APPEND_ULR
 module.exports.VENUS_DATE   = VENUS_DATE
 module.exports.STRESA_DATE  = STRESA_DATE
 module.exports.D20DATE      = D20DATE

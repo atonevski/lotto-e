@@ -15,8 +15,8 @@ vue = new Vue
     count: null
     lastDraw: { }
     nextDraw: null
-    year: 2018
-    draw: 81
+#    year: 2018
+#    draw: 81
     html: null
     info: null
 
@@ -26,7 +26,6 @@ vue = new Vue
         v.toLocaleString()
       else
         ''
-
     toYMD: utils.toYMD
     toDMY: utils.toDMY
 
@@ -71,10 +70,11 @@ vue = new Vue
           json = utils.parseResponse body
           @count = (utils.qresult json)[0].count
 
-    fetchDraw: () ->
+    fetchDrawAndUpload: () ->
+      throw "Next draw not available" unless @nextDraw
       params =
-        godStr: @year.toString()
-        koloStr: @draw.toString()
+        godStr: @nextDraw.date.getFullYear().toString()
+        koloStr: @nextDraw.draw.toString()
       # http.post utils.L_URL, params, (res) =>
       #   body = ''
       #   res.setEncoding 'utf-8'
@@ -93,6 +93,7 @@ vue = new Vue
         @info = utils.parseL @html
         console.log @info
         console.log "serializeDrawInfo:", @serializeDrawInfo @info
+        @upload()
 
     serializeDrawInfo: (i) ->
       # serialize draw info
@@ -126,8 +127,19 @@ vue = new Vue
            "jjx3=#{ i.jjx3 }&jjx2=#{ i.jjx2 }&jjx1=#{ i.jjx1 }&"
       # joker winning column
       s += "jwc=#{ i.jwc }"
+  
+    upload: () ->
+      throw "Invalid draw info" unless @info
+      request.post {
+        url: utils.APPEND_ULR
+        body: @serializeDrawInfo @info
+      }, (err, res, body) =>
+        console.log "Upload status code: #{ res.statusCode }"
+        if res.statusCode is 200
+          @getTotalDraws()
+          @getLastDraw()
 
   created: () ->
     @getTotalDraws()
     @getLastDraw()
-    @fetchDraw()
+    # @fetchDraw()
