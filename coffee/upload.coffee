@@ -1,4 +1,4 @@
-# upload.coffe:
+# upload.coffee:
 # - reads and parses data from draw report
 # - updates gs db
 #
@@ -34,7 +34,7 @@ vue = new Vue
       today = new Date()
       console.log new Date(@nextDraw.date.getTime() + 21*60*60*1000)
       console.log new Date(today.getTime())
-      @nextDraw? and 
+      @nextDraw? and
         new Date(@nextDraw.date.getTime() + 21*60*60*1000) <= today.getTime()
 
     getNextDraw: (d) -> utils.nextDraw d
@@ -127,19 +127,26 @@ vue = new Vue
            "jjx3=#{ i.jjx3 }&jjx2=#{ i.jjx2 }&jjx1=#{ i.jjx1 }&"
       # joker winning column
       s += "jwc=#{ i.jwc }"
-  
+
     upload: () ->
       throw "Invalid draw info" unless @info
+      headers =
+        'Content-Type':     'application/x-www-form-urlencoded'
+        'Accept-Charset':   'utf-8'
+        'Accept':           'application/json'
       request.post {
         url: utils.APPEND_ULR
         body: @serializeDrawInfo @info
+        params: @serializeDrawInfo @info
+        headers: headers
       }, (err, res, body) =>
         console.log "Upload status code: #{ res.statusCode }"
-        if res.statusCode is 200
+        if res.statusCode in [200, 302]
           @getTotalDraws()
           @getLastDraw()
+        else
+          alert "Upload error: #{ res.statusCode } \n #{ body }"
 
   created: () ->
     @getTotalDraws()
     @getLastDraw()
-    # @fetchDraw()

@@ -1,0 +1,79 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <title>Lotto: Last few draws</title>
+    <link rel="stylesheet" href="../css/bootstrap-solarized-dark.css">
+    <script src='../js/vue.js'></script>
+    <style>
+      th.center { text-align: center; }
+      th.left { text-align: left; }
+      th.right { text-align: right; }
+      tbody.totals { font-weight: bold; }
+
+      .red-c { color: crimson; }
+      .green-c { color: green; }
+      .yellow-c { color: goldenrod; }
+      .blue-c { color: cornflowerblue; }
+      .magenta-c { color: hotpink; }
+      .cyan-c { color: cyan; }
+      .light-gray-c { color: #839496; }
+      .dark-gray-c { color: #586e75; }
+      .light-red-c { color: palevioletred; }
+      .light-green-c { color: greenyellow; }
+      .light-yellow-c { color: orange; }
+      .light-blue-c { color: dodgerblue; }
+      .light-magenta-c { color: magenta; }
+      .light-cyan-c { color: deepskyblue; }
+      .white-c { color: white; }
+    </style>
+  </head>
+  <body class='container'>
+    <div id='app'>
+      <h3>Last few draws</h3>
+      <div class='table-responsive'>
+        <table class='table table-striped table-hover table-condensed'>
+          <caption>Joker 1st category winners</caption>
+          <thead>
+            <tr>
+              <th class='center'>Draw#</th>
+              <th class='center'>Date</th>
+              <th class='right'>Lotto Sales</th>
+              <th class='center'>1</th>
+              <th class='center'>2</th>
+              <th class='center'>3</th>
+              <th class='center'>4</th>
+              <th class='center'>5</th>
+              <th class='center'>6</th>
+              <th class='center'>7</th>
+              <th class='center'><sup>+</sup></th>
+              <th class='right'>Joker Sales</th>
+              <th class='center'>Joker</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for='d in draws'>
+              <td align='center'>{{ d.draw }}</td>
+              <td align='center'>{{ d.date | toDMY('.') }}</td>
+              <td align='right'>{{ Math.round(d.lsales) | number }}</td>
+
+              <td align='center' class='red-c'>{{ d.lwc1 }}</td>
+              <td align='center' class='green-c'>{{ d.lwc2 }}</td>
+              <td align='center' class='yellow-c'>{{ d.lwc3 }}</td>
+              <td align='center' class='blue-c'>{{ d.lwc4 }}</td>
+              <td align='center' class='magenta-c'>{{ d.lwc5 }}</td>
+              <td align='center' class='light-blue-c'>{{ d.lwc6 }}</td>
+              <td align='center' class='light-magenta-c'>{{ d.lwc7 }}</td>
+              <td align='center' class='white-c'>{{ d.lwcp }}</td>
+
+              <td align='right'>{{ Math.round(d.jsales) | number }}</td>
+              <td align='center' class='white-c'>{{ d.jwc }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+    </div> <!-- #app -->
+    <script src='../js/last.js'></script>
+  </body>
+</html>
