@@ -1,4 +1,4 @@
-# last.coffee: last few draws
+# all.coffee: list all draws (complete)
 #
 
 utils = require '../js/utils.js'
@@ -20,16 +20,8 @@ vue = new Vue
     toDMY: utils.toDMY
 
   methods:
-    getDraws: () ->
-      q = '''
-        SELECT
-          A, B,
-          C, X, Y, Z, AA, AB, AC, AD, AE,
-          AF, BE
-        ORDER BY B DESC
-        LIMIT 25
-      '''
-      https.get utils.qstring(q), (res) =>
+    getFirstDraws: () ->
+      https.get utils.qstring('SELECT * LIMIT 25'), (res) =>
         body = ''
         res.setEncoding 'utf-8'
         res.on 'data', (d) -> body += d
@@ -39,5 +31,8 @@ vue = new Vue
           @draws = utils.qresult json
 
   created: () ->
-    @getDraws()
-    console.log location.pathname
+    @getFirstDraws()
+    window.onscroll = () ->
+      console.log 'onscroll called'
+      if document.documentElement.scrollTop + window.innerHeight is document.documentElement.offsetHeight
+        console.log 'reached bottom of window'

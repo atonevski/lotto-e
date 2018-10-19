@@ -65,6 +65,12 @@ createWindow = function() {
           }
         },
         {
+          label: 'List all draws',
+          click: function() {
+            return win.loadFile('./views/all.html');
+          }
+        },
+        {
           type: 'separator'
         },
         {

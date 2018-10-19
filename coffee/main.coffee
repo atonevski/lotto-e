@@ -48,6 +48,7 @@ createWindow = () ->
       label: 'View'
       submenu: [
         { label: 'Last few draws', click: () -> win.loadFile './views/last.html' },
+        { label: 'List all draws', click: () -> win.loadFile './views/all.html' },
         { type: 'separator' },
         { label: '1st category winners', click: () -> win.loadFile './views/cat1.html' },
         { label: '2nd category winners', click: () -> win.loadFile './views/cat2.html'  }
