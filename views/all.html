@@ -6,45 +6,59 @@
     <link rel="stylesheet" href="../css/bootstrap-solarized-dark.css">
     <script src='../js/vue.js'></script>
     <style>
-      th.center { text-align: center; }
-      th.left { text-align: left; }
-      th.right { text-align: right; }
+      th.center, td.center { text-align: center; }
+      th.left, td.left { text-align: left; }
+      th.right, td.right { text-align: right; }
       tbody.totals { font-weight: bold; }
 
-      .red-c { color: crimson; }
-      .green-c { color: green; }
-      .yellow-c { color: goldenrod; }
-      .blue-c { color: cornflowerblue; }
-      .magenta-c { color: hotpink; }
-      .cyan-c { color: cyan; }
+      .red-c { color: crimson !important; }
+      .green-c { color: green !important; }
+      .yellow-c { color: goldenrod !important; }
+      .blue-c { color: cornflowerblue !important; }
+      .magenta-c { color: hotpink !important; }
+      .cyan-c { color: cyan !important; }
       .light-gray-c { color: #839496; }
       .dark-gray-c { color: #586e75; }
       .light-red-c { color: palevioletred; }
       .light-green-c { color: greenyellow; }
       .light-yellow-c { color: orange; }
-      .light-blue-c { color: dodgerblue; }
-      .light-magenta-c { color: magenta; }
+      .light-blue-c { color: dodgerblue !important; }
+      .light-magenta-c { color: magenta !important; }
       .light-cyan-c { color: deepskyblue; }
-      .white-c { color: white; }
+      .white-c { color: white !important; }
+
+      .wc { font-size: 75%; }
+      .header-c { color: #93a1a1; }
+
+      thead tr:nth-child(1) th {
+        background: #002b36;
+        position: sticky;
+        top: 0;
+        z-index: 10;
+      }
+
     </style>
   </head>
   <body class='container'>
     <div id='app'>
       <h3>List all draws</h3>
       <div class='table-responsive'>
-        <table class='table table-striped table-hover table-condensed'>
+        <table class='table table-striped table-hover table-condensed'
+               v-if='draws.length > 0'>
           <caption>List all draws</caption>
           <thead>
             <tr>
-              <th v-for='c in Object.keys(draws[0])'>
-                {{ c }}
+              <th v-for='c in Object.keys(draws[0])' class='header-c'
+                  v-bind:class='cclass[c]'>
+                <small>{{ c }}</small>
               </th>
             </tr>
           </thead>
           <tbody>
             <tr v-for='d in draws'>
-              <td v-for='c in Object.keys(d)'>
-                {{ d[c] }}
+              <td v-for='c in Object.keys(d)' align='right' v-bind:class='cclass[c]'>
+                <span v-if='d[c] instanceof Date'>{{ d[c] | toDMY }}</span>
+                <span v-else='d[c] instanceof Date'>{{ d[c] | number }}</span>
               </td>
             </tr>
           </tbody>
