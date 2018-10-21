@@ -21,11 +21,17 @@ vue = new Vue
 
   methods:
     getDraws: () ->
+      # D-H: lotto winners
+      # AG-AL: joker winners
       q = '''
         SELECT
           A, B,
-          C, X, Y, Z, AA, AB, AC, AD, AE,
-          AF, BE
+          C, 
+          D, E, F, G, H,
+          X, Y, Z, AA, AB, AC, AD, AE,
+          AF,
+          AG, AH, AI, AJ, AK, AL,
+          BE
         ORDER BY B DESC
         LIMIT 25
       '''

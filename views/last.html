@@ -6,9 +6,9 @@
     <link rel="stylesheet" href="../css/bootstrap-solarized-dark.css">
     <script src='../js/vue.js'></script>
     <style>
-      th.center { text-align: center; }
-      th.left { text-align: left; }
-      th.right { text-align: right; }
+      th.center, td.center { text-align: center; }
+      th.left, td.left { text-align: left; }
+      th.right, td.right { text-align: right; }
       tbody.totals { font-weight: bold; }
 
       .red-c { color: crimson; }
@@ -26,6 +26,9 @@
       .light-magenta-c { color: magenta; }
       .light-cyan-c { color: deepskyblue; }
       .white-c { color: white; }
+
+      .wcol { font-size: 80%; }
+      .win { font-size: 90%; }
     </style>
   </head>
   <body class='container'>
@@ -39,6 +42,11 @@
               <th class='center'>Draw#</th>
               <th class='center'>Date</th>
               <th class='right'>Lotto Sales</th>
+              <th class='center'>&times;7</th>
+              <th class='center'>&times;6<sup>+</sup></th>
+              <th class='center'>&times;6</th>
+              <th class='right'>&times;5</th>
+              <th class='right'>&times;4</th>
               <th class='center'>1</th>
               <th class='center'>2</th>
               <th class='center'>3</th>
@@ -47,7 +55,14 @@
               <th class='center'>6</th>
               <th class='center'>7</th>
               <th class='center'><sup>+</sup></th>
+
               <th class='right'>Joker Sales</th>
+              <th class='center'>&times;6</th>
+              <th class='center'>&times;5</th>
+              <th class='center'>&times;4</th>
+              <th class='center'>&times;3</th>
+              <th class='right'>&times;2</th>
+              <th class='right'>&times;1</th>
               <th class='center'>Joker</th>
             </tr>
           </thead>
@@ -57,16 +72,28 @@
               <td align='center'>{{ d.date | toDMY('.') }}</td>
               <td align='right'>{{ Math.round(d.lsales) | number }}</td>
 
-              <td align='center' class='red-c'>{{ d.lwc1 }}</td>
-              <td align='center' class='green-c'>{{ d.lwc2 }}</td>
-              <td align='center' class='yellow-c'>{{ d.lwc3 }}</td>
-              <td align='center' class='blue-c'>{{ d.lwc4 }}</td>
-              <td align='center' class='magenta-c'>{{ d.lwc5 }}</td>
-              <td align='center' class='light-blue-c'>{{ d.lwc6 }}</td>
-              <td align='center' class='light-magenta-c'>{{ d.lwc7 }}</td>
-              <td align='center' class='white-c'>{{ d.lwcp }}</td>
+              <td class='win center'>{{ d.lx7 }}</td>
+              <td class='win center'>{{ d.lx6p }}</td>
+              <td class='win center'>{{ d.lx6 }}</td>
+              <td class='win right'>{{ d.lx5 }}</td>
+              <td class='win right'>{{ d.lx4 | number }}</td>
+
+              <td class='wcol center red-c'>{{ d.lwc1 }}</td>
+              <td class='wcol center green-c'>{{ d.lwc2 }}</td>
+              <td class='wcol center yellow-c'>{{ d.lwc3 }}</td>
+              <td class='wcol center blue-c'>{{ d.lwc4 }}</td>
+              <td class='wcol center magenta-c'>{{ d.lwc5 }}</td>
+              <td class='wcol center light-blue-c'>{{ d.lwc6 }}</td>
+              <td class='wcol center light-magenta-c'>{{ d.lwc7 }}</td>
+              <td class='wcol center white-c'>{{ d.lwcp }}</td>
 
               <td align='right'>{{ Math.round(d.jsales) | number }}</td>
+              <td class='win center'>{{ d.jx6 }}</td>
+              <td class='win center'>{{ d.jx5 }}</td>
+              <td class='win center'>{{ d.jx4 }}</td>
+              <td class='win center'>{{ d.jx3 }}</td>
+              <td class='win right'>{{ d.jx2 | number }}</td>
+              <td class='win right'>{{ d.jx1 | number }}</td>
               <td align='center' class='white-c'>{{ d.jwc }}</td>
             </tr>
           </tbody>

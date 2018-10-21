@@ -24,7 +24,7 @@ vue = new Vue({
   methods: {
     getDraws: function() {
       var q;
-      q = 'SELECT\n  A, B,\n  C, X, Y, Z, AA, AB, AC, AD, AE,\n  AF, BE\nORDER BY B DESC\nLIMIT 25';
+      q = 'SELECT\n  A, B,\n  C, \n  D, E, F, G, H,\n  X, Y, Z, AA, AB, AC, AD, AE,\n  AF,\n  AG, AH, AI, AJ, AK, AL,\n  BE\nORDER BY B DESC\nLIMIT 25';
       return https.get(utils.qstring(q), (function(_this) {
         return function(res) {
           var body;
