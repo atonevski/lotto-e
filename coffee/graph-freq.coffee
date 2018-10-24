@@ -6,6 +6,7 @@ https = require 'https'
 
 # some globals
 lfreq = [ ]
+totf = [ ]
 drum  = 'BOTH'
 WIDTH = 800
 HEIGHT = 500
@@ -17,7 +18,7 @@ margins =
   left:   40
 
 for i in [0..34]
-  lfreq.push [0, 0, 0, 0, 0, 0, 0, 0]
+  lfreq.push [0, 0, 0, 0, 0, 0, 0, 0, 0]
 
 lq = '''
   SELECT X, Y, Z, AA, AB, AC, AD, AE
@@ -50,6 +51,10 @@ https.get utils.qstring(lq), (res) =>
       lfreq[r.lwc6][5] += 1
       lfreq[r.lwc7][6] += 1
       lfreq[r.lwcp][7] += 1
+    for i in [1..34]
+      totf[i] = lfreq[i].reduce (a, s) ->
+          a + s
+      , 0
     plot()
   null
 
@@ -132,7 +137,7 @@ plot = () ->
      .attr 'height', (d) -> yRange(d[0]) - yRange(d[1])
      .attr 'width', xRange.bandwidth()
      .append 'title'
-     .text (d, i) -> "#{ i + 1 }"
+     .text (d, i) -> "#{ i + 1 }: #{ totf[i + 1]}"
 
   l = svg.append 'g'
      .attr 'transform', "translate(#{ WIDTH - 25 }, #{ margins.top })"
