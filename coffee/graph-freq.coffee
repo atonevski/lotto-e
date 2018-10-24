@@ -1,4 +1,4 @@
-# graph-freq.coffee: stacked bars graph 
+# graph-freq.coffee: stacked bars graph
 #
 
 utils = require '../js/utils.js'
@@ -8,7 +8,7 @@ https = require 'https'
 lfreq = [ ]
 drum  = 'BOTH'
 WIDTH = 800
-HEIGHT = 600
+HEIGHT = 500
 
 margins =
   top:    20
@@ -131,6 +131,8 @@ plot = () ->
      .attr 'y', (d) -> yRange d[1]
      .attr 'height', (d) -> yRange(d[0]) - yRange(d[1])
      .attr 'width', xRange.bandwidth()
+     .append 'title'
+     .text (d, i) -> "#{ i + 1 }"
 
   l = svg.append 'g'
      .attr 'transform', "translate(#{ WIDTH - 25 }, #{ margins.top })"
@@ -138,13 +140,13 @@ plot = () ->
      .data keys.reverse()
      .enter().append 'g'
      .attr 'transform', (d, i) -> "translate(0, #{ i*20 })"
-     
+
      l.append 'rect'
      .attr 'x', -19
      .attr 'width', 19
      .attr 'height', 19
      .attr 'fill', (d, i) -> color keys.length - i
-     
+
      l.append 'text'
      .attr 'font-size', '70%'
      .attr 'x', -60
