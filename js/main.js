@@ -44,6 +44,11 @@ createWindow = function() {
           click: function() {
             return win.loadFile('./views/freq.html');
           }
+        }, {
+          label: 'Freq graph',
+          click: function() {
+            return win.loadFile('./views/graph-freq.html');
+          }
         }
       ]
     }, {

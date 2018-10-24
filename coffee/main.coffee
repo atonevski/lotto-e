@@ -41,6 +41,10 @@ createWindow = () ->
         {
           label: 'Drawn numbers'
           click: () -> win.loadFile './views/freq.html'
+        },
+        {
+          label: 'Freq graph'
+          click: () -> win.loadFile './views/graph-freq.html'
         }
       ]
     },

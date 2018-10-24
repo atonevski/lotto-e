@@ -3,7 +3,7 @@
 #
 
 utils = require '../js/utils.js'
-https  = require 'https'
+https = require 'https'
 
 vue = new Vue
   el: '#app'
