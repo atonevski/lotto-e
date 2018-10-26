@@ -8,6 +8,23 @@ https = require 'https'
 vue = new Vue
   el: '#app'
 
+  data:
+    count: null
+    lastDraw: { }
+    lfreq: [ ]
+    jfreq: [ ]
+    drum: 'BOTH'
+
+    showGraphs: yes
+    LWIDTH:  800
+    LHEIGHT: 500
+
+    lmargins:
+      top:    20
+      right:  120
+      bottom: 20
+      left:   40
+
   filters:
     number: (v) ->
       if v? and typeof v.toLocaleString is 'function'
@@ -19,6 +36,7 @@ vue = new Vue
     toDMY: utils.toDMY
 
   methods:
+    toggleShow: () -> @showGraphs = not @showGraphs
     getLastDraw: () ->
       q = '''
         SELECT A, B
@@ -48,6 +66,41 @@ vue = new Vue
         res.on 'end', () =>
           json = utils.parseResponse body
           @count = (utils.qresult json)[0].count
+
+    drawLgraph: () ->
+      svg = d3.select '#id-lgraph'
+              .attr 'class', 'axis'
+              .attr 'width', @LWIDTH + 'px'
+              .attr 'height', @LHEIGHT + 'px'
+      [xmin, xmax] = [1, 34]
+      ymin = 0
+      ymax = d3.max @lfreq[1..34], (n) ->
+                  n.reduce (x, s) ->
+                    x + s
+                  , 0
+      xRange = d3.scaleBand()
+                .range [@lmargins.left, @LWIDTH - @lmargins.right]
+                .domain [xmin..xmax]
+                .padding 0.2
+
+      yRange = d3.scaleLinear()
+                .range [@LHEIGHT - @lmargins.top, @lmargins.bottom]
+                .domain [ymin, ymax]
+
+      xAxis = d3.axisBottom xRange
+      yAxis = d3.axisLeft yRange
+
+      console.log svg
+
+      svg.append 'g' # take care for redrawing
+        .attr 'class', 'x axis'
+        .attr 'transform', "translate(0, #{ @LHEIGHT - @lmargins.bottom })"
+        .call xAxis
+
+      svg.append 'g'
+        .attr 'class', 'y axis'
+        .attr 'transform', "translate(#{ @lmargins.left }, 0)"
+        .call yAxis
 
     getFreq: () -> # drum: options argument
       lfreq = [ ]
@@ -86,6 +139,7 @@ vue = new Vue
             lfreq[r.lwc7][6] += 1
             lfreq[r.lwcp][7] += 1
           @lfreq = lfreq
+          @drawLgraph()
         null
 
 
@@ -127,12 +181,6 @@ vue = new Vue
       console.log "Drum is:", @drum
       @getFreq()
 
-  data:
-    count: null
-    lastDraw: { }
-    lfreq: [ ]
-    jfreq: [ ]
-    drum: 'BOTH'
 
   created: () ->
     @getTotalDraws()
