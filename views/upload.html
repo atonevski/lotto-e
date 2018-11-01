@@ -26,6 +26,7 @@
       .light-magenta-c { color: magenta; }
       .light-cyan-c { color: deepskyblue; }
       .white-c { color: white; }
+
     </style>
   </head>
   <body class='container'>
@@ -37,12 +38,13 @@
           <dd>{{ lastDraw.draw }} on {{ lastDraw.date | toDMY }}</dd>
         <dt v-if='nextDraw'>Next draw:</dt>
           <dd v-if='nextDraw'>{{ nextDraw.draw }} on {{ nextDraw.date | toDMY }}
-          <button type='button' class='btn btn-default btn-xs'
+          <button type='button' class='btn btn-xs'
+                  v-bind:class="{ 'btn-success': nextDrawAvail(), 'btn-warning': !nextDrawAvail() }"
+                  style='vertical-align: bottom !important;'
                   :disabled='!nextDrawAvail()' v-on:click='fetchDrawAndUpload()'>
             <span class='glyphicon glyphicon-cloud-upload'></span> Upload</button>
           </dd>
       </dl>
-
 
     </div> <!-- #app -->
     <script src='../js/upload.js'></script>

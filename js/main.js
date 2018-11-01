@@ -52,14 +52,16 @@ createWindow = function() {
           click: function() {
             return win.loadFile('./views/freq.html');
           }
+        },
+        {
+          label: 'Sales graph',
+          click: function() {
+            return win.loadFile('./views/graph-sales.html');
+          }
         }
       ]
     },
     {
-      //         {
-      //           label: 'Freq graph'
-      //           click: () -> win.loadFile './views/graph-freq.html'
-      //         }
       label: 'View',
       submenu: [
         {
