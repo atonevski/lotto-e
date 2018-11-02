@@ -10,9 +10,9 @@ HEIGHT = 500
 
 margins =
   top:    20
-  right:  120
+  right:  80
   bottom: 20
-  left:   40
+  left:   80
 recs = []
 
 # draw, date, lotto sales, lx7, lfx7+ljx7, joker sales, jx6, jfx6+jjx6
@@ -40,36 +40,45 @@ https.get utils.qstring(lq), (res) =>
     plot()
 
 plot = () ->
-  wednesdays = (r for r in recs when r.date.getDay() is 1)
-  saturdays = (r for r in recs when r.date.getDay() is 6)
+  color = d3.scaleOrdinal(d3.schemeCategory10)
 
-  # console.log wednesdays
+  wednesdays  = (r for r in recs when r.date.getDay() is 3)
+  saturdays   = (r for r in recs when r.date.getDay() is 6)
+
+  wedData = wednesdays[-50..-1]
+  satData = saturdays[-50..-1]
 
   svg = d3.select '.container'
           .append 'svg'
           .attr 'class', 'axis'
           .attr 'width', WIDTH
           .attr 'height', HEIGHT
-  console.log wednesdays[-1].date
-  console.log wednesdays[-50].date
 
-  [xmin, xmax] = [ wednesdays[-1].date, wednesdays[-50].date ]
+  [xmin, xmax] = [ wedData[0].monday, wedData[-1..][0].monday ]
   xRange = d3.scaleTime()
              .range [margins.left, WIDTH - margins.right]
-             .domain [xmin..xmax]
-#              .padding 0.2
+             .domain [xmin, xmax]
 
-  ymin = d3.min wednesdays[-1..-50], (d) ->
-              d.lsales
+  ymin = d3.min [(d3.min wedData, (d) -> d.lsales), (d3.min satData, (d) -> d.lsales)]
+  ymax = d3.max [(d3.max wedData, (d) -> d.lsales), (d3.max satData, (d) -> d.lsales)]
 
-  ymax = d3.max wednesdays[-1..-50], (d) ->
-              d.lsales
+  yminj = d3.min [(d3.min wedData, (d) -> d.jsales), (d3.min satData, (d) -> d.jsales)]
+  ymaxj = d3.max [(d3.max wedData, (d) -> d.jsales), (d3.max satData, (d) -> d.jsales)]
+
+  console.log [ymin, ymax]
+  console.log wednesdays.reverse()[0...50].reverse()
+
   yRange = d3.scaleLinear()
              .range [HEIGHT - margins.top, margins.bottom]
              .domain [ymin, ymax]
+  yRangej= d3.scaleLinear()
+             .range [HEIGHT - margins.top, margins.bottom]
+             .domain [yminj, ymaxj]
 
   xAxis = d3.axisBottom xRange
+            .tickFormat d3.timeFormat "%W/%Y"
   yAxis = d3.axisLeft yRange
+  yAxisj = d3.axisRight yRangej
 
   svg.append 'g'
      .attr 'class', 'x axis'
@@ -80,6 +89,57 @@ plot = () ->
      .attr 'class', 'y axis'
      .attr 'transform', "translate(#{ margins.left }, 0)"
      .call yAxis
+
+  svg.append 'g'
+     .attr 'class', 'y axis'
+     .attr 'transform', "translate(#{ WIDTH - margins.right }, 0)"
+     .call yAxisj
+
+  lnvals = d3.line() # see curve
+             .x (d) -> xRange d.monday
+             .y (d) -> yRange d.lsales
+             .curve d3.curveCardinal
+
+  lnvalsj = d3.line() # see curve
+              .x (d) -> xRange d.monday
+              .y (d) -> yRangej d.jsales
+              .curve d3.curveCardinal
+
+  svg.append 'path'
+     .data [wedData]
+     .attr 'class', 'line'
+     .attr 'd', lnvals
+     .style 'stroke', color 0
+
+  svg.append 'path'
+     .data [satData]
+     .attr 'class', 'sat-line'
+     .attr 'd', lnvals
+     .style 'stroke', color 1
+
+  # svg.append 'path'
+  #    .data [wedData]
+  #    .attr 'class', 'line'
+  #    .attr 'd', lnvalsj
+  #    .style 'stroke', color 2
+
+  # svg.append 'path'
+  #    .data [satData]
+  #    .attr 'class', 'sat-line'
+  #    .attr 'd', lnvalsj
+  #    .style 'stroke', color 3
+
+# CURVE:
+# var curveArray = [
+#     {"d3Curve":d3.curveLinear,"curveTitle":"curveLinear"},
+#     {"d3Curve":d3.curveStep,"curveTitle":"curveStep"},
+#     {"d3Curve":d3.curveStepBefore,"curveTitle":"curveStepBefore"},
+#     {"d3Curve":d3.curveStepAfter,"curveTitle":"curveStepAfter"},
+#     {"d3Curve":d3.curveBasis,"curveTitle":"curveBasis"},
+#     {"d3Curve":d3.curveCardinal,"curveTitle":"curveCardinal"},
+#     {"d3Curve":d3.curveMonotoneX,"curveTitle":"curveMonotoneX"},
+#     {"d3Curve":d3.curveCatmullRom,"curveTitle":"curveCatmullRom"}
+#   ];
 
 
 #
