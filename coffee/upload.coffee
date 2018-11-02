@@ -15,8 +15,6 @@ vue = new Vue
     count: null
     lastDraw: { }
     nextDraw: null
-#    year: 2018
-#    draw: 81
     html: null
     info: null
 
@@ -32,8 +30,6 @@ vue = new Vue
   methods:
     nextDrawAvail: (d) ->
       today = new Date()
-      console.log new Date(@nextDraw.date.getTime() + 21*60*60*1000)
-      console.log new Date(today.getTime())
       @nextDraw? and
         new Date(@nextDraw.date.getTime() + 21*60*60*1000) <= today.getTime()
 

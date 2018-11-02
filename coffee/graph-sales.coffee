@@ -5,14 +5,14 @@ utils = require '../js/utils.js'
 https = require 'https'
 
 # some globals
-WIDTH = 800
-HEIGHT = 500
+WIDTH = 500
+HEIGHT = 300
 
 margins =
   top:    20
-  right:  80
+  right:  60
   bottom: 20
-  left:   80
+  left:   60
 recs = []
 
 # draw, date, lotto sales, lx7, lfx7+ljx7, joker sales, jx6, jfx6+jjx6
@@ -42,92 +42,111 @@ https.get utils.qstring(lq), (res) =>
 plot = () ->
   color = d3.scaleOrdinal(d3.schemeCategory10)
 
+  # for now we don't plot older draws on other week days
   wednesdays  = (r for r in recs when r.date.getDay() is 3)
   saturdays   = (r for r in recs when r.date.getDay() is 6)
 
+  # we select recent 50 draws
   wedData = wednesdays[-50..-1]
   satData = saturdays[-50..-1]
 
-  svg = d3.select '.container'
-          .append 'svg'
-          .attr 'class', 'axis'
-          .attr 'width', WIDTH
-          .attr 'height', HEIGHT
-
+  # [-1..][0] is the last element in array
   [xmin, xmax] = [ wedData[0].monday, wedData[-1..][0].monday ]
   xRange = d3.scaleTime()
              .range [margins.left, WIDTH - margins.right]
              .domain [xmin, xmax]
 
-  ymin = d3.min [(d3.min wedData, (d) -> d.lsales), (d3.min satData, (d) -> d.lsales)]
-  ymax = d3.max [(d3.max wedData, (d) -> d.lsales), (d3.max satData, (d) -> d.lsales)]
+  yminl = d3.min [(d3.min wedData, (d) -> d.lsales), (d3.min satData, (d) -> d.lsales)]
+  ymaxl = d3.max [(d3.max wedData, (d) -> d.lsales), (d3.max satData, (d) -> d.lsales)]
 
   yminj = d3.min [(d3.min wedData, (d) -> d.jsales), (d3.min satData, (d) -> d.jsales)]
   ymaxj = d3.max [(d3.max wedData, (d) -> d.jsales), (d3.max satData, (d) -> d.jsales)]
 
-  console.log [ymin, ymax]
-  console.log wednesdays.reverse()[0...50].reverse()
-
-  yRange = d3.scaleLinear()
-             .range [HEIGHT - margins.top, margins.bottom]
-             .domain [ymin, ymax]
-  yRangej= d3.scaleLinear()
-             .range [HEIGHT - margins.top, margins.bottom]
-             .domain [yminj, ymaxj]
+  yRangel = d3.scaleLinear()
+              .range [HEIGHT - margins.top, margins.bottom]
+              .domain [yminl, ymaxl]
+  yRangej = d3.scaleLinear()
+              .range [HEIGHT - margins.top, margins.bottom]
+              .domain [yminj, ymaxj]
 
   xAxis = d3.axisBottom xRange
             .tickFormat d3.timeFormat "%W/%Y"
-  yAxis = d3.axisLeft yRange
+            .ticks 6
+
+  yAxisl = d3.axisLeft yRangel
   yAxisj = d3.axisRight yRangej
 
-  svg.append 'g'
-     .attr 'class', 'x axis'
-     .attr 'transform', "translate(0, #{ HEIGHT - margins.bottom })"
-     .call xAxis
-
-  svg.append 'g'
-     .attr 'class', 'y axis'
-     .attr 'transform', "translate(#{ margins.left }, 0)"
-     .call yAxis
-
-  svg.append 'g'
-     .attr 'class', 'y axis'
-     .attr 'transform', "translate(#{ WIDTH - margins.right }, 0)"
-     .call yAxisj
-
-  lnvals = d3.line() # see curve
-             .x (d) -> xRange d.monday
-             .y (d) -> yRange d.lsales
-             .curve d3.curveCardinal
+  # line values
+  lnvalsl = d3.line() # see curve
+              .x (d) -> xRange d.monday
+              .y (d) -> yRangel d.lsales
+              .curve d3.curveCardinal
 
   lnvalsj = d3.line() # see curve
               .x (d) -> xRange d.monday
               .y (d) -> yRangej d.jsales
               .curve d3.curveCardinal
+  # render LOTTO
+  svgl = d3.select '.container'
+           .append 'svg'
+           .attr 'class', 'axis'
+           .attr 'width', WIDTH
+           .attr 'height', HEIGHT
 
-  svg.append 'path'
+  svgl.append 'g'
+     .attr 'class', 'x axis'
+     .attr 'transform', "translate(0, #{ HEIGHT - margins.bottom })"
+     .call xAxis
+
+  svgl.append 'g'
+     .attr 'class', 'y axis'
+     .attr 'transform', "translate(#{ margins.left }, 0)"
+     .call yAxisl
+
+  svgl.append 'path'
      .data [wedData]
      .attr 'class', 'line'
-     .attr 'd', lnvals
+     .attr 'd', lnvalsl
      .style 'stroke', color 0
 
-  svg.append 'path'
+  svgl.append 'path'
      .data [satData]
-     .attr 'class', 'sat-line'
-     .attr 'd', lnvals
+     .attr 'class', 'line'
+     .attr 'd', lnvalsl
      .style 'stroke', color 1
+  # render Joker
+  svgj = d3.select '.container'
+           .append 'svg'
+           .attr 'class', 'axis'
+           .attr 'width', WIDTH
+           .attr 'height', HEIGHT
 
-  # svg.append 'path'
-  #    .data [wedData]
-  #    .attr 'class', 'line'
-  #    .attr 'd', lnvalsj
-  #    .style 'stroke', color 2
+  svgj.append 'g'
+     .attr 'class', 'x axis'
+     .attr 'transform', "translate(0, #{ HEIGHT - margins.bottom })"
+     .call xAxis
 
-  # svg.append 'path'
-  #    .data [satData]
-  #    .attr 'class', 'sat-line'
-  #    .attr 'd', lnvalsj
-  #    .style 'stroke', color 3
+  svgj.append 'g'
+     .attr 'class', 'y axis'
+     .attr 'transform', "translate(#{ WIDTH - margins.right }, 0)"
+     .call yAxisj
+
+  svgj.append 'path'
+     .data [wedData]
+     .attr 'class', 'line'
+     .attr 'd', lnvalsj
+     .style 'stroke', color 2
+
+  svgj.append 'path'
+     .data [satData]
+     .attr 'class', 'line'
+     .attr 'd', lnvalsj
+     .style 'stroke', color 3
+# TODO:
+# add 1st category prize and full jackpot
+# add legend and title
+# polish appearance
+# and dots for each draw including tooltip for sales, etc.
 
 # CURVE:
 # var curveArray = [
